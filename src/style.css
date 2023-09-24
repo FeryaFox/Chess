@@ -1,0 +1,34 @@
+h2{
+    text-align: center;
+}
+.chessboard {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    border: 1px solid #000;
+}
+
+.cell {
+    width: 100%;
+    padding-bottom: 100%;
+    position: relative; /* Добавим позиционирование для фигур */
+}
+
+.white-square {
+    background-color: #fff;
+}
+
+.black-square {
+    background-color: #808080;
+}
+
+.piece {
+    font-size: 36px; /* Размер фигур */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}

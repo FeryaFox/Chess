@@ -1,4 +1,6 @@
+
 import './style.css'
+
 import './pieces'
 import {Board} from './board'
 
@@ -13,7 +15,8 @@ for (let i = 0; i < 8; i++){
 
         const piece = document.createElement('div');
         piece.classList.add('piece');
-        piece.textContent = board.getFigure(j, i).name;
+        console.log(board.getFigure(j, i))
+        piece.textContent = board.getFigure(j, i).img
         const cell = document.createElement('div');
         if ((i + j) % 2 === 0){
             cell.classList.add("square")

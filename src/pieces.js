@@ -1,5 +1,5 @@
-colors = {WHITE: "white", BLACK: "black", EMPTY: "empty"}
-pieces = {PAWN: "pawn", KING: "king", QUEEN: "queen", BISHOP: "bishop", KNIGHT: "knight", ROOK: "rook", EMPTY: "empty"}
+export let colors = {WHITE: "white", BLACK: "black", EMPTY: "empty"}
+export let pieces = {PAWN: "pawn", KING: "king", QUEEN: "queen", BISHOP: "bishop", KNIGHT: "knight", ROOK: "rook", EMPTY: "empty"}
 
 class Piece{
     img_white = ""
@@ -23,7 +23,7 @@ class Piece{
     }
 }
 
-class Pawn extends Piece{
+export class Pawn extends Piece{
     // Пешка
     name = pieces.PAWN
     img_white = "♙"
@@ -31,37 +31,37 @@ class Pawn extends Piece{
     isFirstStep = true
 }
 
-class King extends Piece{
+export class King extends Piece{
     //Король
     name = pieces.KING
     img_white = "♔"
     img_black = "♚"
 }
-class Queen extends Piece{
+export class Queen extends Piece{
     //Ферзь
     name = pieces.QUEEN
     img_white = "♕"
     img_black = "♛"
 }
-class Bishop extends Piece{
+export class Bishop extends Piece{
     //Слон
     name = pieces.BISHOP
     img_white = "♗"
     img_black = "♝"
 }
-class Knight extends Piece{
+export class Knight extends Piece{
     //Конь
     name = pieces.KNIGHT
     img_white = "♘"
     img_black = "♞"
 }
-class Rook extends Piece{
+export class Rook extends Piece{
     //Ладья
     name = pieces.ROOK
     img_white = "♖"
     img_black = "♜"
 }
-class Empty extends Piece{
+export class Empty extends Piece{
     name = pieces.EMPTY
     constructor(position_x, position_y) {
         super(colors.EMPTY, position_x, position_y);

@@ -11,7 +11,7 @@ h2{
     border: 1px solid #000;
 }
 
-.cell {
+.square {
     width: 100%;
     padding-bottom: 100%;
     position: relative; /* Добавим позиционирование для фигур */

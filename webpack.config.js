@@ -10,18 +10,20 @@ module.exports = {
         clean: true,
     },
     plugins: [
+        // new HtmlWebpackPlugin(new HtmlWebpackPlugin({ template: './src/index.html' })),
+        new MiniCssExtractPlugin(),
         new HtmlWebpackPlugin({
-            hash: true,
-            filename: 'index.html'
-        }),
-        new MiniCssExtractPlugin()
+            template: 'src/index.html',
+            filename: 'index.html',
+            // inject: false
+        })
     ],
     module: {
         rules: [
             {
                 test: /\.css$/i,
                 use: [MiniCssExtractPlugin.loader, "css-loader"],
-            }
+            },
         ],
     },
     mode: 'development'

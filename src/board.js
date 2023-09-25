@@ -1,4 +1,5 @@
 import './pieces'
+import {colors, Rook, Knight, Bishop, Queen, King, Empty, Pawn} from "./pieces";
 
 export class Board{
     pieces = []

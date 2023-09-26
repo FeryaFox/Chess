@@ -13,11 +13,13 @@ board.initBoard()
 for (let i = 0; i < 8; i++){
     for (let j = 0; j < 8; j++){
 
-        const piece = document.createElement('div');
+        const piece = document.createElement('div')
         piece.classList.add('piece');
-        console.log(board.getFigure(j, i))
         piece.textContent = board.getFigure(j, i).img
         const cell = document.createElement('div');
+
+        board.setDocumentElementToFigure(j, i, piece)
+
         if ((i + j) % 2 === 0){
             cell.classList.add("square")
             cell.classList.add("white-square")
@@ -32,5 +34,6 @@ for (let i = 0; i < 8; i++){
         }
         chessboard.appendChild(cell)
     }
-
 }
+
+console.log(board.getFigures(0, 1).possibleSteps())

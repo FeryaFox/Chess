@@ -1,14 +1,16 @@
+import {removeElementFromArrayByIndex} from "./utlis";
+
 export let colors = {WHITE: "white", BLACK: "black", EMPTY: "empty"}
 export let pieces = {PAWN: "pawn", KING: "king", QUEEN: "queen", BISHOP: "bishop", KNIGHT: "knight", ROOK: "rook", EMPTY: "empty"}
 export let stepType = {ATTACK: "attack", STEP: "step", STEPANDATTACK: "stepandattack"}
 
 class possibleStep{
-    positionX = 0
-    possibleY = 0
+    position_x = 0
+    position_y = 0
     stepType
     constructor(positionX, positionY, sT) {
-        this.positionX = positionX
-        this.possibleY = positionY
+        this.position_x = positionX
+        this.position_y = positionY
         this.stepType = sT
     }
 }
@@ -48,7 +50,6 @@ export class Pawn extends Piece{
     isFirstStep = true
     possibleSteps() {
         let ps = new possibleSteps()
-        console.log(this.position_y)
         if (this.color === colors.BLACK) {
             if (this.position_y < 7) {
                 ps.position[ps.position.length] = new possibleStep(
@@ -142,12 +143,75 @@ export class King extends Piece{
     name = pieces.KING
     img_white = "♔"
     img_black = "♚"
+    possibleSteps() {
+
+        let ps = new possibleSteps()
+        ps.position[ps.position.length] = new possibleStep(
+            this.position_x - 1,
+            this.position_y + 1,
+            stepType.STEPANDATTACK
+        )
+        ps.position[ps.position.length] = new possibleStep(
+            this.position_x,
+            this.position_y + 1,
+            stepType.STEPANDATTACK
+        )
+        ps.position[ps.position.length] = new possibleStep(
+            this.position_x + 1,
+            this.position_y + 1,
+            stepType.STEPANDATTACK
+        )
+        ps.position[ps.position.length] = new possibleStep(
+            this.position_x - 1,
+            this.position_y,
+            stepType.STEPANDATTACK
+        )
+        ps.position[ps.position.length] = new possibleStep(
+            this.position_x + 1,
+            this.position_y,
+            stepType.STEPANDATTACK
+        )
+        ps.position[ps.position.length] = new possibleStep(
+            this.position_x - 1,
+            this.position_y - 1,
+            stepType.STEPANDATTACK
+        )
+        ps.position[ps.position.length] = new possibleStep(
+            this.position_x + 1,
+            this.position_y - 1,
+            stepType.STEPANDATTACK
+        )
+        ps.position[ps.position.length] = new possibleStep(
+            this.position_x,
+            this.position_y - 1,
+            stepType.STEPANDATTACK
+        )
+        let clearSteps = new possibleSteps()
+        for (let i = 0; i < ps.position.length; i++){
+            if (
+                ps.position[i].position_x >= 0 &&
+                ps.position[i].position_x <= 7 &&
+                ps.position[i].position_y >= 0 &&
+                ps.position[i].position_y <= 7
+            ){
+                clearSteps.position[clearSteps.position.length] = ps.position[i]
+            }
+        }
+        return clearSteps
+    }
 }
 export class Queen extends Piece{
     //Ферзь
     name = pieces.QUEEN
     img_white = "♕"
     img_black = "♛"
+    possibleSteps() {
+        let ps = new possibleSteps()
+        for (let i = 0; i < 8; i++){
+            ps.position
+        }
+
+    }
 }
 export class Bishop extends Piece{
     //Слон

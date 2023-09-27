@@ -36,4 +36,4 @@ for (let i = 0; i < 8; i++){
     }
 }
 
-console.log(board.getFigures(0, 1).possibleSteps())
+console.log(board.getFigure(4, 0).possibleSteps())

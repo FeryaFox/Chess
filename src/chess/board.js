@@ -1,24 +1,20 @@
 import './pieces'
-import {colors, Rook, Knight, Bishop, Queen, King, Empty, Pawn} from "./pieces";
+import {convertSquareNameToCoordinates} from "./utlis";
+import {colors, Rook, Knight, Bishop, Queen, King, Empty, Pawn} from "./pieces"
 
 export class Board{
     pieces = []
-    constructor() {
-        // ... (ваш существующий код)
 
-        this.selectedPiece = null; // Хранит выбранную фигуру
-        this.dragStartX = 0;
-        this.dragStartY = 0;
-
-        // Добавьте обработчики событий для доски
-        chessboard.addEventListener('dragstart', this.handleDragStart.bind(this));
-        chessboard.addEventListener('dragover', this.handleDragOver.bind(this));
-        chessboard.addEventListener('dragenter', this.handleDragEnter.bind(this));
-        chessboard.addEventListener('dragleave', this.handleDragLeave.bind(this));
-        chessboard.addEventListener('drop', this.handleDrop.bind(this));
-        chessboard.addEventListener('dragend', this.handleDragEnd.bind(this));
+    constructor(chessboard, onclick, move) {
+        this.chessboard = chessboard
+        this.onClickFunction = onclick
     }
 
+    onClickSquare(ev){
+        console.log(this.getFigure(0, 0))
+        console.log(ev)
+
+    }
     initBoard(){
         this.pieces = [
             this.createFigures(colors.BLACK, 0),
@@ -30,7 +26,41 @@ export class Board{
             this.createPawns(colors.WHITE, 6),
             this.createFigures(colors.WHITE, 7)
         ]
+        this.drawBoard()
     }
+
+    drawBoard(){
+        const colum_name = ["A", "B", "C", "D", "E", "F", "G", "H"]
+        const row_name = [8, 7, 6, 5, 4, 3, 2, 1]
+        for (let i = 0; i < 8; i++){
+            for (let j = 0; j < 8; j++){
+
+                const piece = document.createElement('div')
+                piece.classList.add('piece');
+                piece.textContent = this.getFigure(j, i).img
+                const cell = document.createElement('div');
+
+                this.setDocumentElementToFigure(j, i, piece)
+
+                cell.onclick = this.onClickFunction
+
+                if ((i + j) % 2 === 0){
+                    cell.classList.add("square")
+                    cell.classList.add("white-square")
+                    cell.setAttribute("id", colum_name[j]+row_name[i])
+                    cell.appendChild(piece)
+                }
+                else {
+                    cell.classList.add("square")
+                    cell.classList.add("black-square")
+                    cell.setAttribute("id", colum_name[j]+row_name[i])
+                    cell.appendChild(piece)
+                }
+                this.chessboard.appendChild(cell)
+            }
+        }
+    }
+
     getFigures(){
         return this.pieces
     }

@@ -3,9 +3,24 @@ import {colors, Rook, Knight, Bishop, Queen, King, Empty, Pawn} from "./pieces";
 
 export class Board{
     pieces = []
+    constructor() {
+        // ... (ваш существующий код)
+
+        this.selectedPiece = null; // Хранит выбранную фигуру
+        this.dragStartX = 0;
+        this.dragStartY = 0;
+
+        // Добавьте обработчики событий для доски
+        chessboard.addEventListener('dragstart', this.handleDragStart.bind(this));
+        chessboard.addEventListener('dragover', this.handleDragOver.bind(this));
+        chessboard.addEventListener('dragenter', this.handleDragEnter.bind(this));
+        chessboard.addEventListener('dragleave', this.handleDragLeave.bind(this));
+        chessboard.addEventListener('drop', this.handleDrop.bind(this));
+        chessboard.addEventListener('dragend', this.handleDragEnd.bind(this));
+    }
+
     initBoard(){
         this.pieces = [
-
             this.createFigures(colors.BLACK, 0),
             this.createPawns(colors.BLACK, 1),
             this.createEmpty(2),

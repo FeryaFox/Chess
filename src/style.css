@@ -26,6 +26,7 @@ h2{
 }
 
 .piece {
+    draggable: true;
     font-size: 36px; /* Размер фигур */
     position: absolute;
     top: 50%;

@@ -40,6 +40,9 @@ class Piece{
     get name() {
         return this.name
     }
+    get documentElement(){
+        return this.documentElement
+    }
 }
 
 export class Pawn extends Piece{
@@ -207,30 +210,148 @@ export class Queen extends Piece{
     img_black = "♛"
     possibleSteps() {
         let ps = new possibleSteps()
-        for (let i = 0; i < 8; i++){
-            ps.position
+
+        // Ходы по вертикали и горизонтали
+        for (let i = this.position_x + 1; i <= 7; i++) {
+            ps.position[ps.position.length] = new possibleStep(i, this.position_y, stepType.STEP)
+        }
+        for (let i = this.position_x - 1; i >= 0; i--) {
+            ps.position[ps.position.length] = new possibleStep(i, this.position_y, stepType.STEP)
+        }
+        for (let j = this.position_y + 1; j <= 7; j++) {
+            ps.position[ps.position.length] = new possibleStep(this.position_x, j, stepType.STEP)
+        }
+        for (let j = this.position_y - 1; j >= 0; j--) {
+            ps.position[ps.position.length] = new possibleStep(this.position_x, j, stepType.STEP)
         }
 
+        // Ходы по диагонали (вправо вверх)
+        let i = this.position_x + 1
+        let j = this.position_y + 1
+        while (i <= 7 && j <= 7) {
+            ps.position[ps.position.length] = new possibleStep(i, j, stepType.STEP)
+            i++
+            j++
+        }
+
+        // Ходы по диагонали (вправо вниз)
+        i = this.position_x + 1
+        j = this.position_y - 1
+        while (i <= 7 && j >= 0) {
+            ps.position[ps.position.length] = new possibleStep(i, j, stepType.STEP)
+            i++
+            j--
+        }
+
+        // Ходы по диагонали (влево вверх)
+        i = this.position_x - 1
+        j = this.position_y + 1
+        while (i >= 0 && j <= 7) {
+            ps.position[ps.position.length] = new possibleStep(i, j, stepType.STEP)
+            i--
+            j++
+        }
+
+        // Ходы по диагонали (влево вниз)
+        i = this.position_x - 1
+        j = this.position_y - 1
+        while (i >= 0 && j >= 0) {
+            ps.position[ps.position.length] = new possibleStep(i, j, stepType.STEP)
+            i--
+            j--
+        }
+
+        return ps
     }
 }
-export class Bishop extends Piece{
-    //Слон
+export class Bishop extends Piece {
+    // Слон
     name = pieces.BISHOP
     img_white = "♗"
     img_black = "♝"
+
+    possibleSteps() {
+        let ps = new possibleSteps()
+
+        // Ходы по диагонали (вправо вверх)
+        let i = this.position_x + 1
+        let j = this.position_y + 1
+        while (i <= 7 && j <= 7) {
+            ps.position[ps.position.length] = new possibleStep(i, j, stepType.STEP)
+            i++
+            j++
+        }
+
+        // Ходы по диагонали (вправо вниз)
+        i = this.position_x + 1
+        j = this.position_y - 1
+        while (i <= 7 && j >= 0) {
+            ps.position[ps.position.length] = new possibleStep(i, j, stepType.STEP)
+            i++
+            j--
+        }
+
+        // Ходы по диагонали (влево вверх)
+        i = this.position_x - 1
+        j = this.position_y + 1
+        while (i >= 0 && j <= 7) {
+            ps.position[ps.position.length] = new possibleStep(i, j, stepType.STEP)
+            i--
+            j++
+        }
+
+        // Ходы по диагонали (влево вниз)
+        i = this.position_x - 1
+        j = this.position_y - 1
+        while (i >= 0 && j >= 0) {
+            ps.position[ps.position.length] = new possibleStep(i, j, stepType.STEP)
+            i--
+            j--
+        }
+
+        return ps
+    }
 }
+
 export class Knight extends Piece{
     //Конь
     name = pieces.KNIGHT
     img_white = "♘"
     img_black = "♞"
 }
-export class Rook extends Piece{
-    //Ладья
+export class Rook extends Piece {
+    // Ладья
     name = pieces.ROOK
     img_white = "♖"
     img_black = "♜"
+
+    possibleSteps() {
+        let ps = new possibleSteps()
+
+        // Ходы по вертикали вверх
+        for (let j = this.position_y + 1; j <= 7; j++) {
+            ps.position[ps.position.length] = new possibleStep(this.position_x, j, stepType.STEP)
+        }
+
+        // Ходы по вертикали вниз
+        for (let j = this.position_y - 1; j >= 0; j--) {
+            ps.position[ps.position.length] = new possibleStep(this.position_x, j, stepType.STEP)
+        }
+
+        // Ходы по горизонтали вправо
+        for (let i = this.position_x + 1; i <= 7; i++) {
+            ps.position[ps.position.length] = new possibleStep(i, this.position_y, stepType.STEP)
+        }
+
+        // Ходы по горизонтали влево
+        for (let i = this.position_x - 1; i >= 0; i--) {
+            ps.position[ps.position.length] = new possibleStep(i, this.position_y, stepType.STEP)
+        }
+
+        return ps
+    }
 }
+
 export class Empty extends Piece{
     name = pieces.EMPTY
     constructor(position_x, position_y) {

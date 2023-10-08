@@ -7,6 +7,6 @@ export function convertSquareNameToCoordinates(squareName){
     const row_name = [8, 7, 6, 5, 4, 3, 2, 1]
     return {
         "position_x": colum_name.indexOf(squareName[0]),
-        "position_y": row_name.indexOf(squareName[1])
+        "position_y": row_name.indexOf(parseInt(squareName[1]))
     }
 }

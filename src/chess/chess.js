@@ -1,23 +1,19 @@
 import './pieces'
 import {Board} from './board'
-import {move} from "./move";
+import {Move, sideMove} from "./move";
 
 export class chess{
-    constructor(chessboard, move) {
-        function onClickSquare(ev){
-            this.board.onClickSquare(ev)
-        }
+    constructor(chessboard, move, onClickSquare) {
 
-        this.board = new Board(chessboard, onClickSquare, move)
-
-        onClickSquare.bind(this.board)
-    }
-    createOnClick(){
-
+        this.board = new Board(chessboard, onClickSquare)
+        this.move = new Move(move)
+        this.move.setMove(sideMove.WHITE)
     }
     initGame(){
         this.board.initBoard()
-
+    }
+    onCLick(ev){
+        this.board.onClick(ev, this.move.side)
     }
 }
 

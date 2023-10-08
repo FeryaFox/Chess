@@ -20,13 +20,23 @@ class possibleSteps{
 }
 
 class Piece{
-    documentElement = HTMLDivElement
+    documentElement
     img_white = ""
     img_black = ""
     name = ""
     color = ""
     position_x = 0
     position_y = 0
+    isAttackedMove = false
+    setIsAttackedMove(isAttackedMove){
+        if (isAttackedMove){
+            this.documentElement.className = "piece attacked_piece"
+        }
+        else {
+            this.documentElement.className = "piece"
+        }
+        this.isAttackedMove = isAttackedMove
+    }
     constructor(color, position_x, position_y ) {
         this.color = color
         this.position_x = position_x
@@ -313,11 +323,57 @@ export class Bishop extends Piece {
     }
 }
 
-export class Knight extends Piece{
-    //Конь
+export class Knight extends Piece {
+    // Конь
     name = pieces.KNIGHT
     img_white = "♘"
     img_black = "♞"
+
+    possibleSteps() {
+        let ps = new possibleSteps()
+
+        // Ходы коня (вверх-влево)
+        if (this.position_x - 1 >= 0 && this.position_y - 2 >= 0) {
+            ps.position[ps.position.length] = new possibleStep(this.position_x - 1, this.position_y - 2, stepType.STEP)
+        }
+
+        // Ходы коня (вверх-вправо)
+        if (this.position_x + 1 <= 7 && this.position_y - 2 >= 0) {
+            ps.position[ps.position.length] = new possibleStep(this.position_x + 1, this.position_y - 2, stepType.STEP)
+        }
+
+        // Ходы коня (влево-вверх)
+        if (this.position_x - 2 >= 0 && this.position_y - 1 >= 0) {
+            ps.position[ps.position.length] = new possibleStep(this.position_x - 2, this.position_y - 1, stepType.STEP)
+        }
+
+        // Ходы коня (влево-вниз)
+        if (this.position_x - 2 >= 0 && this.position_y + 1 <= 7) {
+            ps.position[ps.position.length] = new possibleStep(this.position_x - 2, this.position_y + 1, stepType.STEP)
+        }
+
+        // Ходы коня (вниз-влево)
+        if (this.position_x - 1 >= 0 && this.position_y + 2 <= 7) {
+            ps.position[ps.position.length] = new possibleStep(this.position_x - 1, this.position_y + 2, stepType.STEP)
+        }
+
+        // Ходы коня (вниз-вправо)
+        if (this.position_x + 1 <= 7 && this.position_y + 2 <= 7) {
+            ps.position[ps.position.length] = new possibleStep(this.position_x + 1, this.position_y + 2, stepType.STEP)
+        }
+
+        // Ходы коня (вправо-вниз)
+        if (this.position_x + 2 <= 7 && this.position_y + 1 <= 7) {
+            ps.position[ps.position.length] = new possibleStep(this.position_x + 2, this.position_y + 1, stepType.STEP)
+        }
+
+        // Ходы коня (вправо-вверх)
+        if (this.position_x + 2 <= 7 && this.position_y - 1 >= 0) {
+            ps.position[ps.position.length] = new possibleStep(this.position_x + 2, this.position_y - 1, stepType.STEP)
+        }
+
+        return ps
+    }
 }
 export class Rook extends Piece {
     // Ладья
@@ -354,6 +410,15 @@ export class Rook extends Piece {
 
 export class Empty extends Piece{
     name = pieces.EMPTY
+    setIsAttackedMove(isAttackedMove){
+        if (isAttackedMove){
+            this.documentElement.className = "piece possible_step"
+        }
+        else {
+            this.documentElement.className = "piece"
+        }
+        this.isAttackedMove = isAttackedMove
+    }
     constructor(position_x, position_y) {
         super(colors.EMPTY, position_x, position_y);
     }

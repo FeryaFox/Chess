@@ -32,3 +32,16 @@ h2{
     left: 50%;
     transform: translate(-50%, -50%);
 }
+.piece.possible_step {
+    background: green;
+    border: 5px solid #0F1C3F;
+    border-radius: 50%;
+    height: 30%;
+    width: 30%;
+}
+.piece.attacked_piece{
+    color: red;
+}
+.square.moved-square{
+    background-color: yellow;
+}

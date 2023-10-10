@@ -31,6 +31,13 @@ h2{
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    -webkit-user-select: none;
+    /* user-select -- это нестандартное свойство */
+
+    -moz-user-select: none;
+    /* поэтому нужны префиксы */
+
+    -ms-user-select: none;
 }
 .piece.possible_step {
     background: green;

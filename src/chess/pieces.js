@@ -8,10 +8,12 @@ class possibleStep{
     position_x = 0
     position_y = 0
     stepType
-    constructor(positionX, positionY, sT) {
+    step_group
+    constructor(positionX, positionY, sT, sG) {
         this.position_x = positionX
         this.position_y = positionY
         this.stepType = sT
+        this.step_group = sG
     }
 }
 
@@ -54,7 +56,6 @@ class Piece{
         return this.documentElement
     }
 }
-
 export class Pawn extends Piece{
     // Пешка
     name = pieces.PAWN
@@ -210,6 +211,7 @@ export class King extends Piece{
                 clearSteps.position[clearSteps.position.length] = ps.position[i]
             }
         }
+        ps.groups_count = 0
         return clearSteps
     }
 }
@@ -223,23 +225,23 @@ export class Queen extends Piece{
 
         // Ходы по вертикали и горизонтали
         for (let i = this.position_x + 1; i <= 7; i++) {
-            ps.position[ps.position.length] = new possibleStep(i, this.position_y, stepType.STEP)
+            ps.position[ps.position.length] = new possibleStep(i, this.position_y, stepType.STEP, 1)
         }
         for (let i = this.position_x - 1; i >= 0; i--) {
-            ps.position[ps.position.length] = new possibleStep(i, this.position_y, stepType.STEP)
+            ps.position[ps.position.length] = new possibleStep(i, this.position_y, stepType.STEP, 2)
         }
         for (let j = this.position_y + 1; j <= 7; j++) {
-            ps.position[ps.position.length] = new possibleStep(this.position_x, j, stepType.STEP)
+            ps.position[ps.position.length] = new possibleStep(this.position_x, j, stepType.STEP, 3)
         }
         for (let j = this.position_y - 1; j >= 0; j--) {
-            ps.position[ps.position.length] = new possibleStep(this.position_x, j, stepType.STEP)
+            ps.position[ps.position.length] = new possibleStep(this.position_x, j, stepType.STEP, 4)
         }
 
         // Ходы по диагонали (вправо вверх)
         let i = this.position_x + 1
         let j = this.position_y + 1
         while (i <= 7 && j <= 7) {
-            ps.position[ps.position.length] = new possibleStep(i, j, stepType.STEP)
+            ps.position[ps.position.length] = new possibleStep(i, j, stepType.STEP, 5)
             i++
             j++
         }
@@ -248,7 +250,7 @@ export class Queen extends Piece{
         i = this.position_x + 1
         j = this.position_y - 1
         while (i <= 7 && j >= 0) {
-            ps.position[ps.position.length] = new possibleStep(i, j, stepType.STEP)
+            ps.position[ps.position.length] = new possibleStep(i, j, stepType.STEP, 6)
             i++
             j--
         }
@@ -257,7 +259,7 @@ export class Queen extends Piece{
         i = this.position_x - 1
         j = this.position_y + 1
         while (i >= 0 && j <= 7) {
-            ps.position[ps.position.length] = new possibleStep(i, j, stepType.STEP)
+            ps.position[ps.position.length] = new possibleStep(i, j, stepType.STEP, 7)
             i--
             j++
         }
@@ -266,11 +268,10 @@ export class Queen extends Piece{
         i = this.position_x - 1
         j = this.position_y - 1
         while (i >= 0 && j >= 0) {
-            ps.position[ps.position.length] = new possibleStep(i, j, stepType.STEP)
+            ps.position[ps.position.length] = new possibleStep(i, j, stepType.STEP, 8)
             i--
             j--
         }
-
         return ps
     }
 }
@@ -287,7 +288,7 @@ export class Bishop extends Piece {
         let i = this.position_x + 1
         let j = this.position_y + 1
         while (i <= 7 && j <= 7) {
-            ps.position[ps.position.length] = new possibleStep(i, j, stepType.STEP)
+            ps.position[ps.position.length] = new possibleStep(i, j, stepType.STEP, 1)
             i++
             j++
         }
@@ -296,7 +297,7 @@ export class Bishop extends Piece {
         i = this.position_x + 1
         j = this.position_y - 1
         while (i <= 7 && j >= 0) {
-            ps.position[ps.position.length] = new possibleStep(i, j, stepType.STEP)
+            ps.position[ps.position.length] = new possibleStep(i, j, stepType.STEP, 2)
             i++
             j--
         }
@@ -305,7 +306,7 @@ export class Bishop extends Piece {
         i = this.position_x - 1
         j = this.position_y + 1
         while (i >= 0 && j <= 7) {
-            ps.position[ps.position.length] = new possibleStep(i, j, stepType.STEP)
+            ps.position[ps.position.length] = new possibleStep(i, j, stepType.STEP, 3)
             i--
             j++
         }
@@ -314,7 +315,7 @@ export class Bishop extends Piece {
         i = this.position_x - 1
         j = this.position_y - 1
         while (i >= 0 && j >= 0) {
-            ps.position[ps.position.length] = new possibleStep(i, j, stepType.STEP)
+            ps.position[ps.position.length] = new possibleStep(i, j, stepType.STEP, 4)
             i--
             j--
         }
@@ -369,7 +370,7 @@ export class Knight extends Piece {
 
         // Ходы коня (вправо-вверх)
         if (this.position_x + 2 <= 7 && this.position_y - 1 >= 0) {
-            ps.position[ps.position.length] = new possibleStep(this.position_x + 2, this.position_y - 1, stepType.STEP)
+            ps.position[ps.position.length] = new possibleStep(this.position_x + 2, this.position_y - 1, stepType.STEP, 0)
         }
 
         return ps
@@ -386,22 +387,22 @@ export class Rook extends Piece {
 
         // Ходы по вертикали вверх
         for (let j = this.position_y + 1; j <= 7; j++) {
-            ps.position[ps.position.length] = new possibleStep(this.position_x, j, stepType.STEP)
+            ps.position[ps.position.length] = new possibleStep(this.position_x, j, stepType.STEP, 0)
         }
 
         // Ходы по вертикали вниз
         for (let j = this.position_y - 1; j >= 0; j--) {
-            ps.position[ps.position.length] = new possibleStep(this.position_x, j, stepType.STEP)
+            ps.position[ps.position.length] = new possibleStep(this.position_x, j, stepType.STEP, 1)
         }
 
         // Ходы по горизонтали вправо
         for (let i = this.position_x + 1; i <= 7; i++) {
-            ps.position[ps.position.length] = new possibleStep(i, this.position_y, stepType.STEP)
+            ps.position[ps.position.length] = new possibleStep(i, this.position_y, stepType.STEP, 2)
         }
 
         // Ходы по горизонтали влево
         for (let i = this.position_x - 1; i >= 0; i--) {
-            ps.position[ps.position.length] = new possibleStep(i, this.position_y, stepType.STEP)
+            ps.position[ps.position.length] = new possibleStep(i, this.position_y, stepType.STEP, 3)
         }
 
         return ps

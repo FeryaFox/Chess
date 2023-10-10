@@ -126,19 +126,30 @@ export class Board{
         }
     }
     filterSteps(steps, moveSide){
+        console.log(steps)
         let filteredSteps = []
         let tempStep
+        let currentGroup = steps[0] === undefined ? undefined : 0
+        let isBlockedStep = false
         for (const step of steps.position){
+            if (step.step_group !== currentGroup){
+                currentGroup = step.step_group
+                isBlockedStep = false
+            }
             let possibleMoveFigure = this.getFigure(step.position_x, step.position_y)
-            if (possibleMoveFigure.color === colors.EMPTY){
+            if (possibleMoveFigure.color === colors.EMPTY && !isBlockedStep){
                 tempStep = step
                 tempStep["step_type"] = stepType.STEP
                 filteredSteps.push(tempStep)
             }
-            else if (moveSide !== possibleMoveFigure.color && step.stepType === stepType.ATTACK && step.stepType === stepType.STEPANDATTACK){
+            else if (moveSide !== possibleMoveFigure.color && step.stepType === stepType.ATTACK && step.stepType === stepType.STEPANDATTACK && !isBlockedStep){
                 tempStep = step
                 tempStep["step_type"] = stepType.ATTACK
                 filteredSteps.push(step)
+                if (currentGroup !== undefined) {isBlockedStep = true}
+            }
+            else if (step.position_x === possibleMoveFigure.position_x && step.position_y === possibleMoveFigure.position_y){
+                isBlockedStep = true
             }
         }
         return filteredSteps
@@ -152,7 +163,8 @@ export class Board{
 
     createPawns(color, position_y){
         let pawns = []
-        for (let i = 0; i < 8; i++){
+        pawns[0] = new Empty()
+        for (let i = 1; i < 8; i++){
             pawns[i] = new Pawn(color, i, position_y)
         }
         return pawns

@@ -1,6 +1,6 @@
 import './pieces'
-import {convertSquareNameToCoordinates} from "./utlis";
-import {colors, Rook, Knight, Bishop, Queen, King, Empty, Pawn, stepType} from "./pieces"
+import {convertCoordinatesToSquareName, convertSquareNameToCoordinates} from "./utlis";
+import {colors, Rook, Knight, Bishop, Queen, King, Empty, Pawn, stepType, pieces} from "./pieces"
 import {sideMove} from "./move";
 
 const figureType = {FIGURE_MAKING_MOVE: "figure_making_move", ATTACKED_FIGURE: "attacked", MOVING_FIGURE: "moving_figure"}
@@ -17,6 +17,7 @@ export class Board{
     }
 
     onClick(ev, side){
+
         let chessPosition;
         if (ev.target.className === "piece"){
             chessPosition = ev.target.parentElement.id
@@ -26,6 +27,7 @@ export class Board{
         }
         let position = convertSquareNameToCoordinates(chessPosition)
         let figure = this.getFigure(position.position_x, position.position_y)
+        let previousFigurePosition = this.selectedPieces.find(item => item.figure_type === figureType.FIGURE_MAKING_MOVE)
 
         if (figure.color !== side) {
             return sideType.NOTHING
@@ -41,9 +43,9 @@ export class Board{
                 position_x: position.position_x,
                 position_y: position.position_y
             })
-            this.showPossibleSteps(possibleStep, side)
+            this.showPossibleSteps(possibleStep, side, figure.name)
         }
-        else {
+        else if (figure.color === side && previousFigurePosition.position_x === figure.position_x && previousFigurePosition.position_y === figure.position_y){
             let previousFigure = this.selectedPieces.find(item => item.figure_type === figureType.FIGURE_MAKING_MOVE)
             if (previousFigure.position_x === position.position_x && previousFigure.position_y === position.position_y){
                 for (const step of this.selectedPieces){
@@ -57,7 +59,32 @@ export class Board{
                     document.getElementById(chessPosition).className = "square black-square"
                 }
             }
+        }
+        else if (figure.color === side) {
+            let previousFigure = this.selectedPieces.find(item => item.figure_type === figureType.FIGURE_MAKING_MOVE)
+            let previousFigureSquareName = convertCoordinatesToSquareName(previousFigure.position_x, previousFigure.position_y)
 
+            for (const step of this.selectedPieces){
+                this.getFigure(step.position_x, step.position_y).setIsAttackedMove(false)
+            }
+            this.selectedPieces = []
+            if ((previousFigure.position_x + previousFigure.position_y) % 2 === 0){
+                document.getElementById(previousFigureSquareName).className = "square white-square"
+            }
+            else {
+                document.getElementById(previousFigureSquareName).className = "square black-square"
+            }
+
+            let possibleStep = figure.possibleSteps()
+            let filteredSteps = this.filterSteps(possibleStep)
+            this.possibleSteps = structuredClone(filteredSteps)
+            document.getElementById(chessPosition).className += " moved-square"
+            this.selectedPieces.push({
+                figure_type: figureType.FIGURE_MAKING_MOVE,
+                position_x: position.position_x,
+                position_y: position.position_y
+            })
+            this.showPossibleSteps(possibleStep, side, figure.name)
         }
     }
     initBoard(){
@@ -104,10 +131,14 @@ export class Board{
             }
         }
     }
-    showPossibleSteps(steps, moveSide){
+    showPossibleSteps(steps, moveSide, figureClass){
         let filteredSteps = this.filterSteps(steps, moveSide)
-
+        console.log(filteredSteps)
         for (const step of filteredSteps){
+            if (figureClass === pieces.PAWN && step.stepType === "attack"){
+                console.log(456789)
+                continue
+            }
             if (step.step_type === stepType.STEP){
                 this.selectedPieces.push({
                     figure_type: figureType.MOVING_FIGURE,
@@ -125,8 +156,9 @@ export class Board{
             this.getFigure(step.position_x, step.position_y).setIsAttackedMove(true)
         }
     }
-    filterSteps(steps, moveSide){
-        console.log(steps)
+    filterSteps(steps, moveSide, figureClass){
+        // console.log(moveSide)
+        // console.log(steps)
         let filteredSteps = []
         let tempStep
         let currentGroup = steps[0] === undefined ? undefined : 0
@@ -137,12 +169,16 @@ export class Board{
                 isBlockedStep = false
             }
             let possibleMoveFigure = this.getFigure(step.position_x, step.position_y)
+
+            // console.log(moveSide, possibleMoveFigure.color)
+            // console.log(moveSide !== possibleMoveFigure.color)
             if (possibleMoveFigure.color === colors.EMPTY && !isBlockedStep){
                 tempStep = step
                 tempStep["step_type"] = stepType.STEP
                 filteredSteps.push(tempStep)
             }
-            else if (moveSide !== possibleMoveFigure.color && step.stepType === stepType.ATTACK && step.stepType === stepType.STEPANDATTACK && !isBlockedStep){
+
+            else if (moveSide !== possibleMoveFigure.color && !isBlockedStep){
                 tempStep = step
                 tempStep["step_type"] = stepType.ATTACK
                 filteredSteps.push(step)

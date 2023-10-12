@@ -6,7 +6,7 @@ export class Move{
         this.moveElement = moveElement
     }
     setMove(side){
-        if (side === side["BLACK"]){
+        if (side === sideMove.BLACK){
             this.side = sideMove.BLACK
             this.moveElement.innerHTML = "Ход черных"
         }
@@ -17,5 +17,15 @@ export class Move{
     }
     get side(){
         return this.side
+    }
+    reversMove(){
+        if (this.side === sideMove.BLACK){
+            this.side = sideMove.WHITE
+            this.moveElement.innerHTML = "Ход белых"
+        }
+        else {
+            this.side = sideMove.BLACK
+            this.moveElement.innerHTML = "Ход черных"
+        }
     }
 }

@@ -10,10 +10,16 @@ export class chess{
         this.move.setMove(sideMove.WHITE)
     }
     initGame(){
+        // TODO load game
         this.board.initBoard()
     }
     onCLick(ev){
-        this.board.onClick(ev, this.move.side)
+        let return_data = this.board.onClick(ev, this.move.side)
+        if (return_data !== undefined){
+            if (return_data.change_side) this.move.reversMove()
+        }
+
+        // TODO save game
     }
 }
 

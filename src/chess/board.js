@@ -10,6 +10,7 @@ export class Board{
     pieces = []
     selectedPieces = []
     possibleSteps = []
+    isMoving = false
 
     constructor(chessboard, onclick) {
         this.chessboard = chessboard
@@ -18,7 +19,7 @@ export class Board{
 
     checkIsPossibleStep(position_x, position_y, figureType){
         for (const step of this.possibleSteps){
-            if (step.position_x === position_x && step.position_y === position_y && step.figure_type === figureType){
+            if (step.position_x === position_x && step.position_y === position_y && step.stepType === stepType.STEP){
                 return true
             }
         }
@@ -38,16 +39,37 @@ export class Board{
         let figure = this.getFigure(position.position_x, position.position_y)
         let previousFigurePosition = this.selectedPieces.find(item => item.figure_type === figureTypes.FIGURE_MAKING_MOVE)
 
-        console.log(this.checkIsPossibleStep(position.position_x, position.position_y, figureTypes.MOVING_FIGURE))
         if (figure.color === colors.EMPTY && this.checkIsPossibleStep(position.position_x, position.position_y, figureTypes.MOVING_FIGURE)) {
-            let figureMakingMove = this.getFigureMakingMove()
-            this.moveFigure(figureMakingMove.position_x, figureMakingMove.position_y, position.position_x, position.position_y, figure)
+            // проверка, может ли фигура походить на пустую клетку
+
+            let figureMakingMove = this.getFigureMakingMove() // получаем фигуру, которая ходит
+            let figureMakingMoveObject = this.getFigure(figureMakingMove.position_x, figureMakingMove.position_y)
+            if (figureMakingMoveObject.name === pieces.PAWN && figureMakingMoveObject.isFirstStep) figureMakingMoveObject.isFirstStep = false
+            this.moveFigure(figureMakingMove.position_x, figureMakingMove.position_y, position.position_x, position.position_y, figureMakingMoveObject) // перемещаем фигуру
+
+            // снимаем пометки с возможных ходов
+            for (const step of this.selectedPieces){
+                this.getFigure(step.position_x, step.position_y).setIsAttackedMove(false)
+            }
+
+            //убираем желтую ячейку и зеленый кружочек
+            let temp = document.getElementById(convertCoordinatesToSquareName(figureMakingMove.position_x, figureMakingMove.position_y))
+            temp.className = temp.className.replace(" moved-square", "")
+            temp.children[0].className = temp.children[0].className.replace(" possible_step", "")
+
+
+            // очищаем все возможные ходы
+            this.selectedPieces = []
+            this.possibleSteps = []
+
+            return {change_side: true, board_info: JSON.stringify(this.getFigures())}
         }
 
-        if (this.selectedPieces.length === 0){
+        if (this.selectedPieces.length === 0 && figure.color === side){
+            // этот вариант выполняется, если фигура не была нажата и показывается точки, куда можно ходить
             let possibleStep = figure.possibleSteps()
-            let filteredSteps = this.filterSteps(possibleStep)
-            console.log(filteredSteps)
+            let filteredSteps = this.filterSteps(possibleStep, side, figure.name)
+            if (filteredSteps === undefined) return;
             this.possibleSteps = Object.assign([], filteredSteps)
             document.getElementById(chessPosition).className += " moved-square"
             this.selectedPieces.push({
@@ -58,6 +80,7 @@ export class Board{
             this.showPossibleSteps(possibleStep, side, figure.name)
         }
         else if (figure.color === side && previousFigurePosition.position_x === figure.position_x && previousFigurePosition.position_y === figure.position_y){
+            // эта ветка отрабатывается, когда нажали на туже фигуру
             let previousFigure = this.selectedPieces.find(item => item.figure_type === figureTypes.FIGURE_MAKING_MOVE)
             if (previousFigure.position_x === position.position_x && previousFigure.position_y === position.position_y){
                 for (const step of this.selectedPieces){
@@ -73,6 +96,7 @@ export class Board{
             }
         }
         else if (figure.color === side) {
+            // эта ветка отрабатывается, когда нажали на другую фигуру
             let previousFigure = this.selectedPieces.find(item => item.figure_type === figureTypes.FIGURE_MAKING_MOVE)
             let previousFigureSquareName = convertCoordinatesToSquareName(previousFigure.position_x, previousFigure.position_y)
 
@@ -88,7 +112,7 @@ export class Board{
             }
 
             let possibleStep = figure.possibleSteps()
-            let filteredSteps = this.filterSteps(possibleStep)
+            let filteredSteps = this.filterSteps(possibleStep, side, figure.name)
             this.possibleSteps = structuredClone(filteredSteps)
             document.getElementById(chessPosition).className += " moved-square"
             this.selectedPieces.push({
@@ -151,12 +175,18 @@ export class Board{
         end_position_y,
         piece
     ){
+        this.getFigure(init_position_x, init_position_y).setPosition(end_position_x, end_position_y)
+        this.getFigure(end_position_x, end_position_y).setPosition(init_position_x, init_position_y)
+
         const tempPiece = this.getFigure(end_position_x, end_position_y)
 
+        // this.setDocumentElementToFigure(init_position_x, init_position_y, piece.documentElement)
+        // this.setDocumentElementToFigure(end_position_x, end_position_y, tempPiece.documentElement)
         this.setFigure(end_position_x, end_position_y, piece)
         this.setFigure(init_position_x, init_position_y, tempPiece)
-        this.drawFigure(init_position_x, init_position_y, tempPiece.documentElement)
-        this.drawFigure(end_position_x, end_position_y, piece.documentElement)
+        this.drawFigure(init_position_x, init_position_y, tempPiece)
+        this.drawFigure(end_position_x, end_position_y, piece)
+
     }
     getFigureMakingMove(){
         return this.selectedPieces.find(item => item.figure_type === figureTypes.FIGURE_MAKING_MOVE)
@@ -164,14 +194,24 @@ export class Board{
     drawFigure(position_x, position_y, piece){
         let positionName = convertCoordinatesToSquareName(position_x, position_y)
         let cellElement = document.getElementById(positionName)
-        cellElement.innerText = piece.documentElement
+        cellElement.replaceChildren(piece.documentElement)
     }
     showPossibleSteps(steps, moveSide, figureClass){
-        let filteredSteps = this.filterSteps(steps, moveSide)
+        let filteredSteps = this.filterSteps(steps, moveSide, figureClass)
         for (const step of filteredSteps){
-            if (figureClass === pieces.PAWN && step.stepType === "attack"){
+            if (figureClass === "pawn" && step.stepType === "attack"){
+                let temp = this.getFigure(step.position_x, step.position_y)
+                if (temp.name !== pieces.EMPTY){
+                    temp.setIsAttackedMove(true)
+                    this.selectedPieces.push({
+                        figure_type: figureTypes.ATTACKED_FIGURE,
+                        position_x: step.position_x,
+                        position_y: step.position_y
+                    })
+                }
                 continue
             }
+
             if (step.step_type === stepType.STEP){
                 this.selectedPieces.push({
                     figure_type: figureTypes.MOVING_FIGURE,
@@ -190,21 +230,28 @@ export class Board{
         }
     }
     filterSteps(steps, moveSide, figureClass){
-        // console.log(moveSide)
-        // console.log(steps)
         let filteredSteps = []
         let tempStep
-        let currentGroup = steps[0] === undefined ? undefined : 0
+        let currentGroup = steps === undefined ? undefined : 0
         let isBlockedStep = false
+        if (steps === undefined) return;
         for (const step of steps.position){
+
+            if (figureClass === pieces.PAWN && step.stepType === "step"){
+                if (this.getFigure(step.position_x, step.position_y).name === pieces.EMPTY){
+                    tempStep = step
+                    tempStep["step_type"] = stepType.STEP
+                    filteredSteps.push(tempStep)
+                }
+                continue
+            }
+
             if (step.step_group !== currentGroup){
                 currentGroup = step.step_group
                 isBlockedStep = false
             }
             let possibleMoveFigure = this.getFigure(step.position_x, step.position_y)
 
-            // console.log(moveSide, possibleMoveFigure.color)
-            // console.log(moveSide !== possibleMoveFigure.color)
             if (possibleMoveFigure.color === colors.EMPTY && !isBlockedStep){
                 tempStep = step
                 tempStep["step_type"] = stepType.STEP

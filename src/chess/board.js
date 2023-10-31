@@ -16,7 +16,6 @@ export class Board{
 
     checkIsPossibleAttack(position_x, position_y){
         for (const step of this.possibleSteps){
-            console.log(step)
             if (step.position_x === position_x && step.position_y === position_y && step.stepType === stepType.ATTACK){
                 return true
             }
@@ -45,8 +44,6 @@ export class Board{
         let position = convertSquareNameToCoordinates(chessPosition)
         let figure = this.getFigure(position.position_x, position.position_y)
         let previousFigurePosition = this.selectedPieces.find(item => item.figure_type === figureTypes.FIGURE_MAKING_MOVE)
-
-        console.log(this.checkIsPossibleAttack(position.position_x, position.position_y, figureTypes.MOVING_FIGURE))
 
         if (figure.color !== side && this.checkIsPossibleAttack(position.position_x, position.position_y, figureTypes.MOVING_FIGURE)){
             // этот кусок кода производит атаку
@@ -276,6 +273,7 @@ export class Board{
         let tempStep
         let currentGroup = steps === undefined ? undefined : 0
         let isBlockedStep = false
+        let isStepPawn = false
         if (steps === undefined) return;
         for (const step of steps.position){
 
@@ -284,6 +282,7 @@ export class Board{
                     tempStep = step
                     tempStep["step_type"] = stepType.STEP
                     filteredSteps.push(tempStep)
+                    isStepPawn = true
                 }
                 continue
             }
@@ -308,6 +307,15 @@ export class Board{
             }
             else if (step.position_x === possibleMoveFigure.position_x && step.position_y === possibleMoveFigure.position_y){
                 isBlockedStep = true
+            }
+        }
+
+        if (figureClass === pieces.PAWN){
+            for (let i of filteredSteps){
+                console.log(i.step_type)
+                if (this.getFigure(i.position_x, i.position_y).name !== pieces.EMPTY && i.step_type === "step"){
+                    filteredSteps = []
+                }
             }
         }
         return filteredSteps

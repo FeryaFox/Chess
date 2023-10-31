@@ -1,16 +1,13 @@
 import './pieces'
 import {convertCoordinatesToSquareName, convertSquareNameToCoordinates} from "./utlis";
 import {colors, Rook, Knight, Bishop, Queen, King, Empty, Pawn, stepType, pieces} from "./pieces"
-import {sideMove} from "./move";
 
 const figureTypes = {FIGURE_MAKING_MOVE: "figure_making_move", ATTACKED_FIGURE: "attacked", MOVING_FIGURE: "moving_figure"}
-const sideType = {NOTHING: "nothing", CHANGESIDE: "changeside"}
 
 export class Board{
     pieces = []
     selectedPieces = []
     possibleSteps = []
-    isMoving = false
 
     constructor(chessboard, onclick) {
         this.chessboard = chessboard
@@ -27,7 +24,7 @@ export class Board{
         return false
     }
 
-    checkIsPossibleStep(position_x, position_y, figureType){
+    checkIsPossibleStep(position_x, position_y){
         for (const step of this.possibleSteps){
             if (step.position_x === position_x && step.position_y === position_y && step.stepType === stepType.STEP){
                 return true

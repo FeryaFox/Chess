@@ -17,6 +17,16 @@ export class Board{
         this.onClickFunction = onclick
     }
 
+    checkIsPossibleAttack(position_x, position_y){
+        for (const step of this.possibleSteps){
+            console.log(step)
+            if (step.position_x === position_x && step.position_y === position_y && step.stepType === stepType.ATTACK){
+                return true
+            }
+        }
+        return false
+    }
+
     checkIsPossibleStep(position_x, position_y, figureType){
         for (const step of this.possibleSteps){
             if (step.position_x === position_x && step.position_y === position_y && step.stepType === stepType.STEP){
@@ -38,6 +48,43 @@ export class Board{
         let position = convertSquareNameToCoordinates(chessPosition)
         let figure = this.getFigure(position.position_x, position.position_y)
         let previousFigurePosition = this.selectedPieces.find(item => item.figure_type === figureTypes.FIGURE_MAKING_MOVE)
+
+        console.log(this.checkIsPossibleAttack(position.position_x, position.position_y, figureTypes.MOVING_FIGURE))
+
+        if (figure.color !== side && this.checkIsPossibleAttack(position.position_x, position.position_y, figureTypes.MOVING_FIGURE)){
+            // этот кусок кода производит атаку
+            let figureMakingMove = this.getFigureMakingMove() // получаем фигуру, которая ходит
+            let figureMakingMoveObject = this.getFigure(figureMakingMove.position_x, figureMakingMove.position_y)
+
+            let emptyPiece = new Empty(figureMakingMove.position_x, figureMakingMove.position_y)
+
+            this.moveFigure(figureMakingMove.position_x, figureMakingMove.position_y, position.position_x, position.position_y, figureMakingMoveObject) // перемещаем фигуру
+
+            this.setFigure(figureMakingMove.position_x, figureMakingMove.position_y, emptyPiece)
+
+            const piece = document.createElement('div')
+            piece.classList.add('piece')
+
+            this.setDocumentElementToFigure(figureMakingMove.position_x, figureMakingMove.position_y, piece)
+            this.setDocumentElementToCell(figureMakingMove.position_x, figureMakingMove.position_y, piece)
+
+
+            // снимаем пометки с возможных ходов
+            for (const step of this.selectedPieces){
+                this.getFigure(step.position_x, step.position_y).setIsAttackedMove(false)
+            }
+
+            //убираем желтую ячейку и зеленый кружочек
+            let temp = document.getElementById(convertCoordinatesToSquareName(figureMakingMove.position_x, figureMakingMove.position_y))
+            temp.className = temp.className.replace(" moved-square", "")
+            temp.children[0].className = temp.children[0].className.replace(" possible_step", "")
+
+            // очищаем все возможные ходы
+            this.selectedPieces = []
+            this.possibleSteps = []
+
+            return {change_side: true, board_info: JSON.stringify(this.getFigures())}
+        }
 
         if (figure.color === colors.EMPTY && this.checkIsPossibleStep(position.position_x, position.position_y, figureTypes.MOVING_FIGURE)) {
             // проверка, может ли фигура походить на пустую клетку
@@ -147,9 +194,7 @@ export class Board{
                 piece.classList.add('piece');
                 piece.textContent = this.getFigure(j, i).img
                 const cell = document.createElement('div');
-                cell.onclick = (ev) => {
 
-                }
                 this.setDocumentElementToFigure(j, i, piece)
 
                 cell.onclick = this.onClickFunction
@@ -310,5 +355,12 @@ export class Board{
 
     setDocumentElementToFigure(position_x, position_y, documentElement){
         this.pieces[position_y][position_x].documentElement = documentElement
+    }
+
+    setDocumentElementToCell(position_x, position_y, documentElement){
+        // данная функция присваивает объект фигура на доску
+        let cellName = convertCoordinatesToSquareName(position_x, position_y)
+        let cellDocumentElement = document.getElementById(cellName)
+        cellDocumentElement.replaceChildren(documentElement)
     }
 }

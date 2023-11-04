@@ -374,7 +374,7 @@ export class Knight extends Piece {
 
         // Ходы коня (вправо-вверх)
         if (this.position_x + 2 <= 7 && this.position_y - 1 >= 0) {
-            ps.position[ps.position.length] = new possibleStep(this.position_x + 2, this.position_y - 1, stepType.STEP, 0)
+            ps.position[ps.position.length] = new possibleStep(this.position_x + 2, this.position_y - 1, stepType.STEP)
         }
 
         return ps

@@ -16,7 +16,6 @@ export class Board{
 
     checkIsPossibleAttack(position_x, position_y){
         for (const step of this.possibleSteps){
-            console.log(step)
             if (step.position_x === position_x && step.position_y === position_y && step.step_type === stepType.ATTACK){
                 return true
             }
@@ -26,7 +25,7 @@ export class Board{
 
     checkIsPossibleStep(position_x, position_y){
         for (const step of this.possibleSteps){
-            if (step.position_x === position_x && step.position_y === position_y && step.stepType === stepType.STEP){
+            if (step.position_x === position_x && step.position_y === position_y && step.step_type === stepType.STEP){
                 return true
             }
         }
@@ -45,7 +44,6 @@ export class Board{
         let position = convertSquareNameToCoordinates(chessPosition)
         let figure = this.getFigure(position.position_x, position.position_y)
         let previousFigurePosition = this.selectedPieces.find(item => item.figure_type === figureTypes.FIGURE_MAKING_MOVE)
-        console.log(this.checkIsPossibleAttack(position.position_x, position.position_y, figureTypes.MOVING_FIGURE))
         if (figure.color !== side && this.checkIsPossibleAttack(position.position_x, position.position_y, figureTypes.MOVING_FIGURE)){
             // этот кусок кода производит атаку
             let figureMakingMove = this.getFigureMakingMove() // получаем фигуру, которая ходит
@@ -272,13 +270,10 @@ export class Board{
     filterSteps(steps, moveSide, figureClass){
         let filteredSteps = []
         let tempStep
-        let currentGroup = steps === undefined ? undefined : 0
+        let currentGroup = steps.position[0].step_type === undefined ? undefined : 0
         let isBlockedStep = false
         let isStepPawn = false
         if (steps === undefined) return;
-
-
-
         for (const step of steps.position){
 
             if (figureClass === pieces.PAWN && step.stepType === "step"){
@@ -294,12 +289,12 @@ export class Board{
                 continue
             }
 
-            if (step.step_group !== currentGroup){
+            if (step.step_group !== undefined && step.step_group !== currentGroup){
+
                 currentGroup = step.step_group
                 isBlockedStep = false
             }
             let possibleMoveFigure = this.getFigure(step.position_x, step.position_y)
-
             if (possibleMoveFigure.color === colors.EMPTY && !isBlockedStep){
                 tempStep = step
                 tempStep["step_type"] = stepType.STEP
@@ -312,10 +307,12 @@ export class Board{
                 filteredSteps.push(step)
                 if (currentGroup !== undefined) {isBlockedStep = true}
             }
-            else if (step.position_x === possibleMoveFigure.position_x && step.position_y === possibleMoveFigure.position_y){
+            else if (step.step_group !== undefined && step.position_x === possibleMoveFigure.position_x && step.position_y === possibleMoveFigure.position_y){
                 isBlockedStep = true
             }
         }
+        console.log(filteredSteps)
+        console.log("----------------")
         return filteredSteps
     }
     getFigures(){

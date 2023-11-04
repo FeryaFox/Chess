@@ -1,5 +1,3 @@
-import {removeElementFromArrayByIndex} from "./utlis";
-
 export let colors = {WHITE: "white", BLACK: "black", EMPTY: "empty"}
 export let pieces = {PAWN: "pawn", KING: "king", QUEEN: "queen", BISHOP: "bishop", KNIGHT: "knight", ROOK: "rook", EMPTY: "empty"}
 export let stepType = {ATTACK: "attack", STEP: "step", STEPANDATTACK: "stepandattack"}

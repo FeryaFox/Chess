@@ -8,15 +8,22 @@ export class Board{
     pieces = []
     selectedPieces = []
     possibleSteps = []
-
     constructor(chessboard, onclick) {
         this.chessboard = chessboard
         this.onClickFunction = onclick
     }
 
-    checkIsPossibleAttack(position_x, position_y){
-        for (const step of this.possibleSteps){
-            if (step.position_x === position_x && step.position_y === position_y && step.step_type === stepType.ATTACK){
+    checkIsPossibleAttack(position_x, position_y, possibleSteps){
+        if (possibleSteps === undefined){
+            for (const step of this.possibleSteps){
+                if (step.position_x === position_x && step.position_y === position_y && step.step_type === stepType.ATTACK){
+                    return true
+                }
+            }
+            return false
+        }
+        for (const step of possibleSteps){
+            if (step.position_x === position_x && step.position === position_y && step.step_type === stepType.ATTACK){
                 return true
             }
         }
@@ -32,7 +39,13 @@ export class Board{
         return false
     }
 
+
     onClick(ev, side){
+
+        function kingCheckCheck(future_position_x, future_position_y){
+            //continue
+        }
+
         let chessPosition;
         if (ev.target.className.includes("piece")){
             chessPosition = ev.target.parentElement.id
@@ -311,8 +324,6 @@ export class Board{
                 isBlockedStep = true
             }
         }
-        console.log(filteredSteps)
-        console.log("----------------")
         return filteredSteps
     }
     getFigures(){
@@ -362,5 +373,29 @@ export class Board{
         let cellName = convertCoordinatesToSquareName(position_x, position_y)
         let cellDocumentElement = document.getElementById(cellName)
         cellDocumentElement.replaceChildren(documentElement)
+    }
+
+    isFutureCheckKing(future_position_x, future_position_y, side){
+        let sideFigure = this.getSideFigures(side)
+        for (let i of sideFigure){
+            if (this.checkIsPossibleAttack(future_position_x, future_position_y, this.filterSteps(i.possibleSteps()))){
+                console.log(true)
+            }
+            else{
+                console.log(false)
+            }
+        }
+    }
+
+    getSideFigures(side) {
+        let sideFigures = []
+        for (let i of this.getFigures()){
+            for (let j of i){
+                if (j.color === side){
+                    sideFigures.push(j)
+                }
+            }
+        }
+        return sideFigures
     }
 }

@@ -275,6 +275,9 @@ export class Board{
         let isBlockedStep = false
         let isStepPawn = false
         if (steps === undefined) return;
+
+
+
         for (const step of steps.position){
 
             if (figureClass === pieces.PAWN && step.stepType === "step"){
@@ -283,6 +286,9 @@ export class Board{
                     tempStep["step_type"] = stepType.STEP
                     filteredSteps.push(tempStep)
                     isStepPawn = true
+                }
+                else {
+                    break
                 }
                 continue
             }
@@ -307,15 +313,6 @@ export class Board{
             }
             else if (step.position_x === possibleMoveFigure.position_x && step.position_y === possibleMoveFigure.position_y){
                 isBlockedStep = true
-            }
-        }
-
-        if (figureClass === pieces.PAWN){
-            for (let i of filteredSteps){
-                console.log(i.step_type)
-                if (this.getFigure(i.position_x, i.position_y).name !== pieces.EMPTY && i.step_type === "step"){
-                    filteredSteps = []
-                }
             }
         }
         return filteredSteps

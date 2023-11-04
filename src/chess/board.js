@@ -16,7 +16,8 @@ export class Board{
 
     checkIsPossibleAttack(position_x, position_y){
         for (const step of this.possibleSteps){
-            if (step.position_x === position_x && step.position_y === position_y && step.stepType === stepType.ATTACK){
+            console.log(step)
+            if (step.position_x === position_x && step.position_y === position_y && step.step_type === stepType.ATTACK){
                 return true
             }
         }
@@ -44,7 +45,7 @@ export class Board{
         let position = convertSquareNameToCoordinates(chessPosition)
         let figure = this.getFigure(position.position_x, position.position_y)
         let previousFigurePosition = this.selectedPieces.find(item => item.figure_type === figureTypes.FIGURE_MAKING_MOVE)
-
+        console.log(this.checkIsPossibleAttack(position.position_x, position.position_y, figureTypes.MOVING_FIGURE))
         if (figure.color !== side && this.checkIsPossibleAttack(position.position_x, position.position_y, figureTypes.MOVING_FIGURE)){
             // этот кусок кода производит атаку
             let figureMakingMove = this.getFigureMakingMove() // получаем фигуру, которая ходит

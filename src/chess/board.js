@@ -1,5 +1,5 @@
 import './pieces'
-import {convertCoordinatesToSquareName, convertSquareNameToCoordinates} from "./utlis";
+import {convertCoordinatesToSquareName, convertSquareNameToCoordinates, reverseSide} from "./utlis";
 import {colors, Rook, Knight, Bishop, Queen, King, Empty, Pawn, stepType, pieces} from "./pieces"
 
 const figureTypes = {FIGURE_MAKING_MOVE: "figure_making_move", ATTACKED_FIGURE: "attacked", MOVING_FIGURE: "moving_figure"}
@@ -22,6 +22,7 @@ export class Board{
             }
             return false
         }
+        console.log(possibleSteps)
         for (const step of possibleSteps){
             if (step.position_x === position_x && step.position === position_y && step.step_type === stepType.ATTACK){
                 return true
@@ -57,6 +58,7 @@ export class Board{
         let position = convertSquareNameToCoordinates(chessPosition)
         let figure = this.getFigure(position.position_x, position.position_y)
         let previousFigurePosition = this.selectedPieces.find(item => item.figure_type === figureTypes.FIGURE_MAKING_MOVE)
+        this.isCheckKing(side)
         if (figure.color !== side && this.checkIsPossibleAttack(position.position_x, position.position_y)){
             // этот кусок кода производит атаку
             let figureMakingMove = this.getFigureMakingMove() // получаем фигуру, которая ходит
@@ -130,7 +132,6 @@ export class Board{
                 position_x: position.position_x,
                 position_y: position.position_y
             })
-            console.log(filteredSteps, possibleStep)
             this.showPossibleSteps(filteredSteps, side, figure.name)
         }
         else if (figure.color === side && previousFigurePosition.position_x === figure.position_x && previousFigurePosition.position_y === figure.position_y){
@@ -387,6 +388,33 @@ export class Board{
                 console.log(false)
             }
         }
+    }
+
+    isCheckKing(side){
+        let reversedSide = reverseSide(side)
+        let king = this.getCertainPiece(pieces.KING, side)
+        let enemyPieces = this.getSideFigures(reversedSide)
+
+        for (let i of enemyPieces){
+            if (this.checkIsPossibleAttack(king[0].position_x, king[0].position_y, this.filterSteps(i.possibleSteps(), reversedSide, i.name))){
+                console.log(true)
+            }
+            else{
+                console.log(false)
+            }
+        }
+    }
+
+    getCertainPiece(pieceName, side){
+        let findPieces = []
+        for (let i of this.getFigures()){
+            for (let j of i){
+                if (j.name === pieceName){
+                    if (side === undefined || j.color === side) findPieces.push(j)
+                }
+            }
+        }
+        return findPieces
     }
 
     getSideFigures(side) {

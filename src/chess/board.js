@@ -14,14 +14,20 @@ export class Board{
     }
 
     checkIsPossibleAttack(position_x, position_y, possibleSteps){
-        for (const step of this.possibleSteps){
-            if (step.position_x === position_x && step.position_y === position_y && step.step_type === stepType.ATTACK){
+        if (possibleSteps === undefined){
+            for (const step of this.possibleSteps){
+                if (step.position_x === position_x && step.position_y === position_y && step.step_type === stepType.ATTACK){
+                    return true
+                }
+            }
+            return false
+        }
+        for (const step of possibleSteps){
+            if (step.position_x === position_x && step.position === position_y && step.step_type === stepType.ATTACK){
                 return true
             }
         }
         return false
-
-
     }
 
     checkIsPossibleStep(position_x, position_y){
@@ -51,7 +57,7 @@ export class Board{
         let position = convertSquareNameToCoordinates(chessPosition)
         let figure = this.getFigure(position.position_x, position.position_y)
         let previousFigurePosition = this.selectedPieces.find(item => item.figure_type === figureTypes.FIGURE_MAKING_MOVE)
-        if (figure.color !== side && this.checkIsPossibleAttack(position.position_x, position.position_y, figureTypes.MOVING_FIGURE)){
+        if (figure.color !== side && this.checkIsPossibleAttack(position.position_x, position.position_y)){
             // этот кусок кода производит атаку
             let figureMakingMove = this.getFigureMakingMove() // получаем фигуру, которая ходит
             let figureMakingMoveObject = this.getFigure(figureMakingMove.position_x, figureMakingMove.position_y)
@@ -124,8 +130,8 @@ export class Board{
                 position_x: position.position_x,
                 position_y: position.position_y
             })
-            // console.log(possibleStep)
-            this.showPossibleSteps(possibleStep, side, figure.name)
+            console.log(filteredSteps, possibleStep)
+            this.showPossibleSteps(filteredSteps, side, figure.name)
         }
         else if (figure.color === side && previousFigurePosition.position_x === figure.position_x && previousFigurePosition.position_y === figure.position_y){
             // эта ветка отрабатывается, когда нажали на туже фигуру
@@ -242,9 +248,9 @@ export class Board{
         let cellElement = document.getElementById(positionName)
         cellElement.replaceChildren(piece.documentElement)
     }
-    showPossibleSteps(steps, moveSide, figureClass){
-        let filteredSteps = this.filterSteps(steps, moveSide, figureClass)
-
+     showPossibleSteps(steps, moveSide, figureClass){
+        // let filteredSteps = this.filterSteps(steps, moveSide, figureClass)
+        let filteredSteps = steps
         for (const step of filteredSteps){
             if (figureClass === "pawn" && step.stepType === "attack"){
                 let temp = this.getFigure(step.position_x, step.position_y)
@@ -283,7 +289,6 @@ export class Board{
         let isBlockedStep = false
         let isStepPawn = false
 
-        console.log(currentGroup)
         for (const step of steps.position){
 
             if (figureClass === pieces.PAWN && step.stepType === "step"){

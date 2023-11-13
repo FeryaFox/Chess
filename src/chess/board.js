@@ -14,20 +14,14 @@ export class Board{
     }
 
     checkIsPossibleAttack(position_x, position_y, possibleSteps){
-        if (possibleSteps === undefined){
-            for (const step of this.possibleSteps){
-                if (step.position_x === position_x && step.position_y === position_y && step.step_type === stepType.ATTACK){
-                    return true
-                }
-            }
-            return false
-        }
-        for (const step of possibleSteps){
-            if (step.position_x === position_x && step.position === position_y && step.step_type === stepType.ATTACK){
+        for (const step of this.possibleSteps){
+            if (step.position_x === position_x && step.position_y === position_y && step.step_type === stepType.ATTACK){
                 return true
             }
         }
         return false
+
+
     }
 
     checkIsPossibleStep(position_x, position_y){
@@ -130,6 +124,7 @@ export class Board{
                 position_x: position.position_x,
                 position_y: position.position_y
             })
+            // console.log(possibleStep)
             this.showPossibleSteps(possibleStep, side, figure.name)
         }
         else if (figure.color === side && previousFigurePosition.position_x === figure.position_x && previousFigurePosition.position_y === figure.position_y){
@@ -173,7 +168,7 @@ export class Board{
                 position_x: position.position_x,
                 position_y: position.position_y
             })
-            this.showPossibleSteps(possibleStep, side, figure.name)
+            this.showPossibleSteps(filteredSteps, side, figure.name)
         }
     }
     initBoard(){
@@ -249,6 +244,7 @@ export class Board{
     }
     showPossibleSteps(steps, moveSide, figureClass){
         let filteredSteps = this.filterSteps(steps, moveSide, figureClass)
+
         for (const step of filteredSteps){
             if (figureClass === "pawn" && step.stepType === "attack"){
                 let temp = this.getFigure(step.position_x, step.position_y)
@@ -286,7 +282,8 @@ export class Board{
         let currentGroup = steps.position[0].step_type === undefined ? undefined : 0
         let isBlockedStep = false
         let isStepPawn = false
-        if (steps === undefined) return;
+
+        console.log(currentGroup)
         for (const step of steps.position){
 
             if (figureClass === pieces.PAWN && step.stepType === "step"){
@@ -338,7 +335,7 @@ export class Board{
     createPawns(color, position_y){
         let pawns = []
         pawns[0] = new Empty()
-        for (let i = 1; i < 8; i++){
+        for (let i = 0; i < 8; i++){
             pawns[i] = new Pawn(color, i, position_y)
         }
         return pawns

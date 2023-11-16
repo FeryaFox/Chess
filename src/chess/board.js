@@ -22,7 +22,6 @@ export class Board{
             }
             return false
         }
-        console.log(possibleSteps)
         for (const step of possibleSteps){
             if (step.position_x === position_x && step.position === position_y && step.step_type === stepType.ATTACK){
                 return true
@@ -42,7 +41,7 @@ export class Board{
 
 
     onClick(ev, side){
-
+        console.log(JSON.stringify(this.getFigure(0, 0)))
         function kingCheckCheck(future_position_x, future_position_y){
             //continue
         }
@@ -90,8 +89,11 @@ export class Board{
             // очищаем все возможные ходы
             this.selectedPieces = []
             this.possibleSteps = []
+            if (figure.name === pieces.KING){
+                return {change_side: false, board_info: JSON.stringify(this.getFigures()), king_is_beaten: true}
+            }
 
-            return {change_side: true, board_info: JSON.stringify(this.getFigures())}
+            return {change_side: true, board_info: JSON.stringify(this.getFigures()) }
         }
 
         if (figure.color === colors.EMPTY && this.checkIsPossibleStep(position.position_x, position.position_y, figureTypes.MOVING_FIGURE)) {

@@ -57,6 +57,13 @@ class Piece{
         this.position_x = position_x
         this.position_y = position_y
     }
+    toJSON(){
+        return {
+            color: this.color,
+            position_x: this.position_x,
+            position_y: this.position_y
+        }
+    }
 }
 export class Pawn extends Piece{
     // Пешка
@@ -64,6 +71,10 @@ export class Pawn extends Piece{
     img_white = "♙"
     img_black = "♟"
     isFirstStep = true
+    constructor(color, position_x, position_y ) {
+        super(color, position_x, position_y);
+
+    }
     possibleSteps() {
         let ps = new possibleSteps()
         if (this.color === colors.BLACK) {

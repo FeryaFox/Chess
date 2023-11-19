@@ -37,7 +37,7 @@ class Piece{
         }
         this.isAttackedMove = isAttackedMove
     }
-    constructor(color, position_x, position_y ) {
+    constructor(color, position_x, position_y) {
         this.color = color
         this.position_x = position_x
         this.position_y = position_y
@@ -59,9 +59,11 @@ class Piece{
     }
     toJSON(){
         return {
+            isAttackedMove: this.isAttackedMove,
             color: this.color,
             position_x: this.position_x,
-            position_y: this.position_y
+            position_y: this.position_y,
+            name: this.name
         }
     }
 }
@@ -71,9 +73,9 @@ export class Pawn extends Piece{
     img_white = "♙"
     img_black = "♟"
     isFirstStep = true
-    constructor(color, position_x, position_y ) {
+    constructor(color, position_x, position_y, isFirstStep) {
         super(color, position_x, position_y);
-
+        this.isFirstStep = isFirstStep === undefined ? true : isFirstStep
     }
     possibleSteps() {
         let ps = new possibleSteps()
@@ -162,6 +164,16 @@ export class Pawn extends Piece{
             }
         }
         return ps
+    }
+    toJSON(){
+        return {
+            isAttackedMove: this.isAttackedMove,
+            color: this.color,
+            position_x: this.position_x,
+            position_y: this.position_y,
+            isFirstStep: this.isFirstStep,
+            name: this.name
+        }
     }
 }
 
@@ -348,42 +360,42 @@ export class Knight extends Piece {
 
         // Ходы коня (вверх-влево)
         if (this.position_x - 1 >= 0 && this.position_y - 2 >= 0) {
-            ps.position[ps.position.length] = new possibleStep(this.position_x - 1, this.position_y - 2, stepType.STEP)
+            ps.position[ps.position.length] = new possibleStep(this.position_x - 1, this.position_y - 2, stepType.STEP, 1)
         }
 
         // Ходы коня (вверх-вправо)
         if (this.position_x + 1 <= 7 && this.position_y - 2 >= 0) {
-            ps.position[ps.position.length] = new possibleStep(this.position_x + 1, this.position_y - 2, stepType.STEP)
+            ps.position[ps.position.length] = new possibleStep(this.position_x + 1, this.position_y - 2, stepType.STEP, 2)
         }
 
         // Ходы коня (влево-вверх)
         if (this.position_x - 2 >= 0 && this.position_y - 1 >= 0) {
-            ps.position[ps.position.length] = new possibleStep(this.position_x - 2, this.position_y - 1, stepType.STEP)
+            ps.position[ps.position.length] = new possibleStep(this.position_x - 2, this.position_y - 1, stepType.STEP, 3)
         }
 
         // Ходы коня (влево-вниз)
         if (this.position_x - 2 >= 0 && this.position_y + 1 <= 7) {
-            ps.position[ps.position.length] = new possibleStep(this.position_x - 2, this.position_y + 1, stepType.STEP)
+            ps.position[ps.position.length] = new possibleStep(this.position_x - 2, this.position_y + 1, stepType.STEP, 4)
         }
 
         // Ходы коня (вниз-влево)
         if (this.position_x - 1 >= 0 && this.position_y + 2 <= 7) {
-            ps.position[ps.position.length] = new possibleStep(this.position_x - 1, this.position_y + 2, stepType.STEP)
+            ps.position[ps.position.length] = new possibleStep(this.position_x - 1, this.position_y + 2, stepType.STEP, 5)
         }
 
         // Ходы коня (вниз-вправо)
         if (this.position_x + 1 <= 7 && this.position_y + 2 <= 7) {
-            ps.position[ps.position.length] = new possibleStep(this.position_x + 1, this.position_y + 2, stepType.STEP)
+            ps.position[ps.position.length] = new possibleStep(this.position_x + 1, this.position_y + 2, stepType.STEP, 6)
         }
 
         // Ходы коня (вправо-вниз)
         if (this.position_x + 2 <= 7 && this.position_y + 1 <= 7) {
-            ps.position[ps.position.length] = new possibleStep(this.position_x + 2, this.position_y + 1, stepType.STEP)
+            ps.position[ps.position.length] = new possibleStep(this.position_x + 2, this.position_y + 1, stepType.STEP, 7)
         }
 
         // Ходы коня (вправо-вверх)
         if (this.position_x + 2 <= 7 && this.position_y - 1 >= 0) {
-            ps.position[ps.position.length] = new possibleStep(this.position_x + 2, this.position_y - 1, stepType.STEP)
+            ps.position[ps.position.length] = new possibleStep(this.position_x + 2, this.position_y - 1, stepType.STEP, 8)
         }
 
         return ps

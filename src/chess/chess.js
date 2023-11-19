@@ -4,15 +4,17 @@ import {Move, sideMove} from "./move";
 import {stepType} from "./pieces";
 
 export class chess{
-    constructor(chessboard, move, onClickSquare) {
-        this.board = new Board(chessboard, onClickSquare)
+    constructor(chessboard, move, lossFunction) {
         this.move = new Move(move)
-        this.move.setMove(sideMove.WHITE)
+        this.board = new Board(chessboard, (ev) => this.onCLick(ev))
         this.stepsCount = 0
+        this.lossFunction = lossFunction
     }
     initGame(){
-        // TODO load game
-        this.board.initBoard()
+        if (!this.loadGame()) {
+            this.move.setMove(sideMove.WHITE)
+            this.board.initBoard()
+        }
     }
     showLoss(){
         if (this.move.side === sideMove.WHITE) alert("Черные проиграли")
@@ -20,7 +22,13 @@ export class chess{
     }
     endGame(){
         this.showLoss()
-
+        this.lossFunction()
+    }
+    resetGame(){
+        localStorage.setItem("game_save", "")
+        this.stepsCount = 0
+        this.board.resetBoard()
+        this.move.setMove(sideMove.WHITE)
     }
     incStepsCount(){
         this.stepsCount++
@@ -36,8 +44,28 @@ export class chess{
                 this.endGame()
             }
         }
+        let boardInfo = this.board.saveBoard()
+        this.saveGame(
+            {
+                board: boardInfo,
+                moveSide: this.move.side,
+                stepsCount: this.stepsCount
+            }
+        )
+    }
 
-        // TODO save game
+    saveGame(chess_info){
+        console.log(chess_info)
+        localStorage.setItem("game_save", JSON.stringify(chess_info))
+    }
+    loadGame(){
+        let game_save = localStorage.getItem("game_save")
+        if (game_save === null || game_save === "") return false;
+        game_save = JSON.parse(game_save)
+        this.move.setMove(game_save.moveSide)
+        this.board.loadBoard(game_save.board)
+        this.stepsCount = game_save.stepsCount
+        return true
     }
 }
 

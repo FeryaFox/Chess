@@ -52,3 +52,12 @@ h2{
 .square.moved-square{
     background-color: yellow;
 }
+
+#statistics {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+.player-statistic {
+    margin-bottom: 10px;
+}

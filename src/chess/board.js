@@ -8,6 +8,7 @@ export class Board{
     pieces = []
     selectedPieces = []
     possibleSteps = []
+    move_side
     constructor(chessboard, onclick) {
         this.chessboard = chessboard
         this.onClickFunction = onclick
@@ -41,7 +42,6 @@ export class Board{
 
 
     onClick(ev, side){
-        console.log(JSON.stringify(this.getFigure(0, 0)))
         function kingCheckCheck(future_position_x, future_position_y){
             //continue
         }
@@ -57,7 +57,6 @@ export class Board{
         let position = convertSquareNameToCoordinates(chessPosition)
         let figure = this.getFigure(position.position_x, position.position_y)
         let previousFigurePosition = this.selectedPieces.find(item => item.figure_type === figureTypes.FIGURE_MAKING_MOVE)
-        this.isCheckKing(side)
         if (figure.color !== side && this.checkIsPossibleAttack(position.position_x, position.position_y)){
             // этот кусок кода производит атаку
             let figureMakingMove = this.getFigureMakingMove() // получаем фигуру, которая ходит
@@ -207,7 +206,7 @@ export class Board{
 
                 this.setDocumentElementToFigure(j, i, piece)
 
-                cell.onclick = this.onClickFunction
+                cell.addEventListener("click", this.onClickFunction)
                 cell.classList.add("square")
                 cell.setAttribute("id", colum_name[j]+row_name[i])
                 if ((i + j) % 2 === 0){
@@ -235,8 +234,6 @@ export class Board{
 
         const tempPiece = this.getFigure(end_position_x, end_position_y)
 
-        // this.setDocumentElementToFigure(init_position_x, init_position_y, piece.documentElement)
-        // this.setDocumentElementToFigure(end_position_x, end_position_y, tempPiece.documentElement)
         this.setFigure(end_position_x, end_position_y, piece)
         this.setFigure(init_position_x, init_position_y, tempPiece)
         this.drawFigure(init_position_x, init_position_y, tempPiece)
@@ -380,33 +377,6 @@ export class Board{
         cellDocumentElement.replaceChildren(documentElement)
     }
 
-    isFutureCheckKing(future_position_x, future_position_y, side){
-        let sideFigure = this.getSideFigures(side)
-        for (let i of sideFigure){
-            if (this.checkIsPossibleAttack(future_position_x, future_position_y, this.filterSteps(i.possibleSteps()))){
-                console.log(true)
-            }
-            else{
-                console.log(false)
-            }
-        }
-    }
-
-    isCheckKing(side){
-        let reversedSide = reverseSide(side)
-        let king = this.getCertainPiece(pieces.KING, side)
-        let enemyPieces = this.getSideFigures(reversedSide)
-
-        for (let i of enemyPieces){
-            if (this.checkIsPossibleAttack(king[0].position_x, king[0].position_y, this.filterSteps(i.possibleSteps(), reversedSide, i.name))){
-                console.log(true)
-            }
-            else{
-                console.log(false)
-            }
-        }
-    }
-
     getCertainPiece(pieceName, side){
         let findPieces = []
         for (let i of this.getFigures()){
@@ -429,5 +399,76 @@ export class Board{
             }
         }
         return sideFigures
+    }
+
+    saveBoard(){
+        let pieces = []
+        for (let i = 0; i < 8; i++){
+            pieces.push([])
+            for (let j = 0; j < 8; j++){
+                pieces[i].push([])
+            }
+        }
+        for (let i = 0; i < 8; i++){
+            for (let j = 0; j < 8; j++){
+                pieces[j][i] = this.pieces[j][i].toJSON()
+            }
+        }
+
+        return {
+            pieces: pieces,
+            selectedPieces: this.selectedPieces,
+            possibleSteps: this.possibleSteps
+        }
+    }
+
+    loadBoard(board_info){
+        let pieces = {
+            "pawn": Pawn,
+            "king": King,
+            "queen": Queen,
+            "bishop": Bishop,
+            "knight": Knight,
+            "rook": Rook,
+            "empty": Empty
+        }
+        this.selectedPieces = board_info["selectedPieces"]
+        this.possibleSteps = board_info["possibleSteps"]
+        for (let i = 0; i < 8; i++){
+            this.pieces.push([])
+            for (let j = 0; j < 8; j++){
+                this.pieces[i].push([])
+            }
+        }
+        for (let i = 0; i < 8; i++){
+
+            for (let j = 0; j < 8; j++){
+                let current_piece = board_info["pieces"][j][i]
+                this.pieces[j][i] = new pieces[current_piece.name](current_piece.color, current_piece.position_x, current_piece.position_y, current_piece.isFirstStep)
+
+            }
+        }
+        this.drawBoard()
+        for (let i = 0; i < 8; i++){
+            for (let j = 0; j < 8; j++){
+                this.pieces[j][i].setIsAttackedMove(board_info.pieces[j][i].isAttackedMove)
+            }
+        }
+        // let figureMakingMove = this.selectedPieces.find(item => item.figure_type === figureTypes.FIGURE_MAKING_MOVE)
+        // document.getElementById(convertCoordinatesToSquareName(figureMakingMove.position_x, figureMakingMove.position_y)).className += " moved-square"
+    }
+    deleteBoard(){
+        this.selectedPieces = []
+        this.possibleSteps = []
+        for (let i = 0; i < 8; i++){
+            for (let j = 0; j < 8; j++){
+                document.getElementById(convertCoordinatesToSquareName(i, j)).remove()
+            }
+        }
+        this.pieces = []
+    }
+    resetBoard(){
+        this.deleteBoard()
+        this.initBoard()
     }
 }
